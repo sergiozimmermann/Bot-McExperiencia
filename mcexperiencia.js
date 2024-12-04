@@ -88,7 +88,7 @@ function getHeaders(numAnterior, initialsSurvey) {
 }
 
 // Página inicial de selecionar idioma.
-function getInitialSurvey() {
+function getInitialSurvey(cnpj) {
   var options = {
     method: "GET",
     url: "https://www.mcexperienciasurvey.com/bra",
@@ -103,12 +103,12 @@ function getInitialSurvey() {
 
     console.log("passou: tela inicial");
 
-    initSurvey(numInitialSurvey);
+    initSurvey(numInitialSurvey, cnpj);
   });
 }
 
 // Iniciar Survey
-function initSurvey(numInitialSurvey) {
+function initSurvey(numInitialSurvey, cnpj) {
   var options = {
     method: "GET",
     url: "https://www.mcexperienciasurvey.com/Index.aspx?c=" + numInitialSurvey,
@@ -143,7 +143,7 @@ function initSurvey(numInitialSurvey) {
     console.log("passou: survey inicial");
 
     const numSurveyCnpj = getNumNextSurvey(bodyText);
-    surveyCnpj(numSurveyCnpj, numInitialSurvey);
+    surveyCnpj(numSurveyCnpj, numInitialSurvey, cnpj);
   });
 }
 
@@ -151,11 +151,20 @@ function initSurvey(numInitialSurvey) {
 function surveyCnpj(numSurveyCnpj, numInitialSurvey, cnpj) {
   if (!cnpj) cnpj = "42591651001204";
 
+  const dataHora = (new Date().toLocaleString("pt-BR") + "").split(", ");
+  const data = dataHora[0].split("/");
+  const horaMinuto = dataHora[1].split(":");
+
+  const Index_VisitDateFormattedDate = data[2] + data[1] + data[0];
+  const Index_VisitDateDatePicker = `${data[1]}%2F${data[0]}%2F${data[2]}`;
+  const horaAgora = horaMinuto[0];
+  const minutosAgora = horaMinuto[1];
+
   var options = {
     method: "GET",
     url: "https://www.mcexperienciasurvey.com/Survey.aspx?c=" + numSurveyCnpj,
     headers: getHeaders(numInitialSurvey, true),
-    body: `JavaScriptEnabled=1&FIP=True&OneQuestionLeftUnansweredErrorMessageTemplate=H%C3%A1+%7B0%7D+erro+na+p%C3%A1gina.&MoreQuestionsLeftUnansweredErrorMessageTemplate=H%C3%A1+%7B0%7D+erros+na+p%C3%A1gina.&InputCNPJ=${cnpj}&Index_VisitDateFormattedDate=20241203&Index_VisitDateDatePicker=12%2F03%2F2024&InputHour=21&InputMinute=13&Index_OptIn=1&NextButton=Iniciar`,
+    body: `JavaScriptEnabled=1&FIP=True&OneQuestionLeftUnansweredErrorMessageTemplate=H%C3%A1+%7B0%7D+erro+na+p%C3%A1gina.&MoreQuestionsLeftUnansweredErrorMessageTemplate=H%C3%A1+%7B0%7D+erros+na+p%C3%A1gina.&InputCNPJ=${cnpj}&Index_VisitDateFormattedDate=${Index_VisitDateFormattedDate}&Index_VisitDateDatePicker=${Index_VisitDateDatePicker}&InputHour=${horaAgora}&InputMinute=${minutosAgora}&Index_OptIn=1&NextButton=Iniciar`,
   };
 
   request(options, function (error, response) {
@@ -454,4 +463,8 @@ function surveyFinish(numSurveyFinish, numSurveyMarketing) {
   });
 }
 
-getInitialSurvey();
+function getCupom(cnpj) {
+  getInitialSurvey(cnpj);
+}
+
+getCupom("42591651001204");
