@@ -88,7 +88,7 @@ function getHeaders(numAnterior, initialsSurvey) {
 }
 
 // Página inicial de selecionar idioma.
-function getInitialSurvey(cnpj) {
+function getInitialSurvey(cnpj, resolve) {
   var options = {
     method: "GET",
     url: "https://www.mcexperienciasurvey.com/bra",
@@ -103,12 +103,12 @@ function getInitialSurvey(cnpj) {
 
     console.log("passou: tela inicial");
 
-    initSurvey(numInitialSurvey, cnpj);
+    return initSurvey(numInitialSurvey, cnpj, resolve);
   });
 }
 
 // Iniciar Survey
-function initSurvey(numInitialSurvey, cnpj) {
+function initSurvey(numInitialSurvey, cnpj, resolve) {
   var options = {
     method: "GET",
     url: "https://www.mcexperienciasurvey.com/Index.aspx?c=" + numInitialSurvey,
@@ -143,12 +143,12 @@ function initSurvey(numInitialSurvey, cnpj) {
     console.log("passou: survey inicial");
 
     const numSurveyCnpj = getNumNextSurvey(bodyText);
-    surveyCnpj(numSurveyCnpj, numInitialSurvey, cnpj);
+    return surveyCnpj(numSurveyCnpj, numInitialSurvey, cnpj, resolve);
   });
 }
 
 // Seleciona Cnpj e Data/Hora
-function surveyCnpj(numSurveyCnpj, numInitialSurvey, cnpj) {
+function surveyCnpj(numSurveyCnpj, numInitialSurvey, cnpj, resolve) {
   if (!cnpj) cnpj = "42591651001204";
 
   const dataHora = (new Date().toLocaleString("pt-BR") + "").split(", ");
@@ -176,12 +176,12 @@ function surveyCnpj(numSurveyCnpj, numInitialSurvey, cnpj) {
 
     const numSurveySetor = getNumNextSurvey(bodyText);
 
-    surveySetor(numSurveySetor, numSurveyCnpj);
+    return surveySetor(numSurveySetor, numSurveyCnpj, resolve);
   });
 }
 
 // Seleciona o setor do pedido (balcão por padrão)
-function surveySetor(numSurveySetor, numSurveyCnpj) {
+function surveySetor(numSurveySetor, numSurveyCnpj, resolve) {
   var options = {
     method: "POST",
     url: "https://www.mcexperienciasurvey.com/Survey.aspx?c=" + numSurveySetor,
@@ -197,12 +197,12 @@ function surveySetor(numSurveySetor, numSurveyCnpj) {
     console.log("passou: survey setor");
 
     const numSurveyUltimaCompra = getNumNextSurvey(bodyText);
-    surveyUltimaCompra(numSurveyUltimaCompra, numSurveySetor);
+    return surveyUltimaCompra(numSurveyUltimaCompra, numSurveySetor, resolve);
   });
 }
 
 // Seleciona que consumiu dentro da loja a última compra
-function surveyUltimaCompra(numSurveyUltimaCompra, numSurveySetor) {
+function surveyUltimaCompra(numSurveyUltimaCompra, numSurveySetor, resolve) {
   var options = {
     method: "POST",
     url:
@@ -220,12 +220,20 @@ function surveyUltimaCompra(numSurveyUltimaCompra, numSurveySetor) {
     console.log("passou: survey última compra");
 
     const numSurveyAcompanhado = getNumNextSurvey(bodyText);
-    surveyAcompanhado(numSurveyAcompanhado, numSurveyUltimaCompra);
+    return surveyAcompanhado(
+      numSurveyAcompanhado,
+      numSurveyUltimaCompra,
+      resolve
+    );
   });
 }
 
 // Seleciona que não estava acompanhado de crianças de 3 a 7 anos
-function surveyAcompanhado(numSurveyAcompanhado, numSurveyUltimaCompra) {
+function surveyAcompanhado(
+  numSurveyAcompanhado,
+  numSurveyUltimaCompra,
+  resolve
+) {
   var options = {
     method: "POST",
     url:
@@ -243,12 +251,20 @@ function surveyAcompanhado(numSurveyAcompanhado, numSurveyUltimaCompra) {
     console.log("passou: survey acompanhado");
 
     const numSurveySatisfacaoGeral = getNumNextSurvey(bodyText);
-    surveySatisfacaoGeral(numSurveySatisfacaoGeral, numSurveyAcompanhado);
+    return surveySatisfacaoGeral(
+      numSurveySatisfacaoGeral,
+      numSurveyAcompanhado,
+      resolve
+    );
   });
 }
 
 // Preenche as satisfações gerais
-function surveySatisfacaoGeral(numSurveySatisfacaoGeral, numSurveyAcompanhado) {
+function surveySatisfacaoGeral(
+  numSurveySatisfacaoGeral,
+  numSurveyAcompanhado,
+  resolve
+) {
   var options = {
     method: "POST",
     url:
@@ -266,9 +282,10 @@ function surveySatisfacaoGeral(numSurveySatisfacaoGeral, numSurveyAcompanhado) {
     console.log("passou: survey satisfação geral");
 
     const numSurveySatisfacaoCliente = getNumNextSurvey(bodyText);
-    surveySatisfacaoCliente(
+    return surveySatisfacaoCliente(
       numSurveySatisfacaoCliente,
-      numSurveySatisfacaoGeral
+      numSurveySatisfacaoGeral,
+      resolve
     );
   });
 }
@@ -276,7 +293,8 @@ function surveySatisfacaoGeral(numSurveySatisfacaoGeral, numSurveyAcompanhado) {
 // Preenche as satisfações de cliente
 function surveySatisfacaoCliente(
   numSurveySatisfacaoCliente,
-  numSurveySatisfacaoGeral
+  numSurveySatisfacaoGeral,
+  resolve
 ) {
   var options = {
     method: "POST",
@@ -295,12 +313,20 @@ function surveySatisfacaoCliente(
     console.log("passou: survey satisfação cliente");
 
     const numSurveyEntregue = getNumNextSurvey(bodyText);
-    surveyEntregue(numSurveyEntregue, numSurveySatisfacaoCliente);
+    return surveyEntregue(
+      numSurveyEntregue,
+      numSurveySatisfacaoCliente,
+      resolve
+    );
   });
 }
 
 // Seleciona que o pedido foi entregue corretamente
-function surveyEntregue(numSurveyEntregue, numSurveySatisfacaoCliente) {
+function surveyEntregue(
+  numSurveyEntregue,
+  numSurveySatisfacaoCliente,
+  resolve
+) {
   var options = {
     method: "POST",
     url:
@@ -317,12 +343,12 @@ function surveyEntregue(numSurveyEntregue, numSurveySatisfacaoCliente) {
     console.log("passou: survey entregue");
 
     const numSurveyExperiencia = getNumNextSurvey(bodyText);
-    surveyExperiencia(numSurveyExperiencia, numSurveyEntregue);
+    return surveyExperiencia(numSurveyExperiencia, numSurveyEntregue, resolve);
   });
 }
 
 // Preenche positivamente as experiências que teve no mcdonalds
-function surveyExperiencia(numSurveyExperiencia, numSurveyEntregue) {
+function surveyExperiencia(numSurveyExperiencia, numSurveyEntregue, resolve) {
   var options = {
     method: "POST",
     url:
@@ -340,12 +366,12 @@ function surveyExperiencia(numSurveyExperiencia, numSurveyEntregue) {
     console.log("passou: survey experiência");
 
     const numSurveyComentario = getNumNextSurvey(bodyText);
-    surveyComentario(numSurveyComentario, numSurveyExperiencia);
+    return surveyComentario(numSurveyComentario, numSurveyExperiencia, resolve);
   });
 }
 
 // Preenche o comentário com "Muito Satisfeito!"
-function surveyComentario(numSurveyComentario, numSurveyExperiencia) {
+function surveyComentario(numSurveyComentario, numSurveyExperiencia, resolve) {
   var options = {
     method: "POST",
     url:
@@ -363,12 +389,12 @@ function surveyComentario(numSurveyComentario, numSurveyExperiencia) {
     console.log("passou: survey comentário");
 
     const numSurveyVisita = getNumNextSurvey(bodyText);
-    surveyVisita(numSurveyVisita, numSurveyComentario);
+    return surveyVisita(numSurveyVisita, numSurveyComentario, resolve);
   });
 }
 
 // Preenche como foi a visita ao mcdonalds
-function surveyVisita(numSurveyVisita, numSurveyComentario) {
+function surveyVisita(numSurveyVisita, numSurveyComentario, resolve) {
   var options = {
     method: "POST",
     url: "https://www.mcexperienciasurvey.com/Survey.aspx?c=" + numSurveyVisita,
@@ -384,12 +410,12 @@ function surveyVisita(numSurveyVisita, numSurveyComentario) {
     console.log("passou: survey visita");
 
     const numSurveyDados = getNumNextSurvey(bodyText);
-    surveyDados(numSurveyDados, numSurveyVisita);
+    return surveyDados(numSurveyDados, numSurveyVisita, resolve);
   });
 }
 
 // Preenche os dados com nome e email aleatórios
-async function surveyDados(numSurveyDados, numSurveyVisita) {
+function surveyDados(numSurveyDados, numSurveyVisita, resolve) {
   request(
     { method: "GET", url: "https://randomuser.me/api/" },
     function (error, response) {
@@ -415,14 +441,14 @@ async function surveyDados(numSurveyDados, numSurveyVisita) {
         console.log("passou: survey dados");
 
         const numSurveyMarketing = getNumNextSurvey(bodyText);
-        surveyMarketing(numSurveyMarketing, numSurveyDados);
+        return surveyMarketing(numSurveyMarketing, numSurveyDados, resolve);
       });
     }
   );
 }
 
 // Seleciona para não receber informações de marketing
-function surveyMarketing(numSurveyMarketing, numSurveyDados) {
+function surveyMarketing(numSurveyMarketing, numSurveyDados, resolve) {
   var options = {
     method: "POST",
     url:
@@ -439,12 +465,12 @@ function surveyMarketing(numSurveyMarketing, numSurveyDados) {
     console.log("passou: survey marketing");
 
     const numSurveyFinish = getNumFinishSurvey(bodyText);
-    surveyFinish(numSurveyFinish, numSurveyMarketing);
+    return surveyFinish(numSurveyFinish, numSurveyMarketing, resolve);
   });
 }
 
 // Retorna o número do cupom do top sundae
-function surveyFinish(numSurveyFinish, numSurveyMarketing) {
+function surveyFinish(numSurveyFinish, numSurveyMarketing, resolve) {
   var options = {
     method: "GET",
     url: "https://www.mcexperienciasurvey.com/Finish.aspx?c=" + numSurveyFinish,
@@ -459,12 +485,40 @@ function surveyFinish(numSurveyFinish, numSurveyMarketing) {
     console.log("passou: survey finish");
 
     const codigoCupom = getCodigoCupom(bodyText);
-    console.log(codigoCupom);
+
+    resolve(codigoCupom);
+    return codigoCupom;
   });
 }
 
 function getCupom(cnpj) {
-  getInitialSurvey(cnpj);
+  return new Promise((resolve) => {
+    getInitialSurvey(cnpj, resolve);
+  });
 }
 
-getCupom("42591651001204");
+// class McExperiencia {
+//   constructor(cnpj) {
+//     this.cnpj = cnpj;
+//   }
+//   getCupomSurvey() {
+//     return new Promise((resolve) => {
+//       getCupom(this.cnpj).then((cupomSurvey) => {
+//         resolve(cupomSurvey);
+//       });
+//     });
+//   }
+// }
+
+// const mcExperiencia = new McExperiencia("42591651001204");
+// mcExperiencia.getCupomSurvey().then((cupomSurvey) => {
+//   console.log(cupomSurvey);
+// });
+
+exports.getCupomSurvey = (cnpj) => {
+  return new Promise((resolve) => {
+    getCupom(cnpj).then((cupomSurvey) => {
+      resolve(cupomSurvey);
+    });
+  });
+};
