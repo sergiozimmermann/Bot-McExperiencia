@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3030;
 app.use(bodyParser.json());
 
 // Endpoint para o Webhook
-app.post("/webhook", (req, res) => {
+app.post("/webhooks", (req, res) => {
   const body = req.body;
 
   // Verifica se é um evento de mensagem
@@ -53,7 +53,7 @@ app.post("/webhook", (req, res) => {
 });
 
 // Endpoint de verificação (para configurar o webhook)
-app.get("/webhook", (req, res) => {
+app.get("/webhooks", (req, res) => {
   const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
   const mode = req.query["hub.mode"];
