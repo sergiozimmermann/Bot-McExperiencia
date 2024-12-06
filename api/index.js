@@ -6,9 +6,9 @@
 //   console.log(cupomSurvey);
 // });
 
+require("dotenv").config({ path: ".env.mcexperiencia" });
 const express = require("express");
 const bodyParser = require("body-parser");
-const Secrets = require("../secrets");
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -54,7 +54,7 @@ app.post("/webhook", (req, res) => {
 
 // Endpoint de verificação (para configurar o webhook)
 app.get("/webhook", (req, res) => {
-  const VERIFY_TOKEN = Secrets.verifyToken;
+  const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
 
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
@@ -69,8 +69,8 @@ app.get("/webhook", (req, res) => {
 
 // Endpoint para testar no vercel
 app.get("/teste", (req, res) => {
-  console.log(req.body);
-  res.send(req.body);
+  console.log(process.env.VERIFY_TOKEN);
+  res.send(process.env.VERIFY_TOKEN);
 });
 app.post("/teste", (req, res) => {
   console.log(req.body);

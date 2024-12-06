@@ -1,2 +1,2 @@
-secrets.js
 .vercel
+.env.*
