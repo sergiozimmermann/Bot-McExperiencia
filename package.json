@@ -4,8 +4,5 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "request": "^2.88.2"
-  },
-  "scripts": {
-    "start": "node --env-file=.env.mcexperiencia api/index.js"
   }
 }

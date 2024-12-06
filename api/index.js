@@ -6,7 +6,7 @@
 //   console.log(cupomSurvey);
 // });
 
-require("dotenv").config({ path: ".env.mcexperiencia" });
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 
